@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 
 	"github.com/google/uuid"
-	"github.com/lithammer/shortuuid/v3"
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/oklog/ulid"
 )
 
