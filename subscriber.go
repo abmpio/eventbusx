@@ -59,11 +59,5 @@ func (s *subscriber) sendMessageToSubscriber(msg *AnyEvent, logFields LogFields)
 			s.logger.Trace("Closing, message discarded", logFields)
 			return
 		}
-
-		select {
-		case <-s.closing:
-			s.logger.Trace("Closing, message discarded", logFields)
-			return
-		}
 	}
 }
