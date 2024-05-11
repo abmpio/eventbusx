@@ -11,6 +11,14 @@ import (
 	"sync"
 )
 
+var (
+	_globalLogger LoggerAdapter = NewStdLogger(false, false)
+)
+
+func SetLogger(loggerAdapter LoggerAdapter) {
+	_globalLogger = loggerAdapter
+}
+
 // LogFields is the logger's key-value list of fields.
 type LogFields map[string]interface{}
 

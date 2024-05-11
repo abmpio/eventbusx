@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	watermill "github.com/abmpio/eventbusx"
+	"github.com/abmpio/eventbusx"
 	"github.com/abmpio/eventbusx/message"
 	"github.com/abmpio/eventbusx/pubsub/gochannel"
 )
@@ -14,7 +14,7 @@ import (
 func main() {
 	pubSub := gochannel.NewGoChannel(
 		gochannel.Config{},
-		watermill.NewStdLogger(false, false),
+		eventbusx.NewStdLogger(false, false),
 	)
 
 	messages, err := pubSub.Subscribe(context.Background(), "example.topic")
@@ -29,7 +29,7 @@ func main() {
 
 func publishMessages(publisher message.Publisher) {
 	for {
-		msg := message.NewMessage(watermill.NewUUID(), []byte("Hello, world!"))
+		msg := message.NewMessage(eventbusx.NewUUID(), []byte("Hello, world!"))
 
 		if err := publisher.Publish("example.topic", msg); err != nil {
 			panic(err)
