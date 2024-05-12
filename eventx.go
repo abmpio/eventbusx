@@ -1,20 +1,27 @@
 package eventbusx
 
-import "context"
+import (
+	"context"
+	"unsafe"
+)
 
-type EventX[T any] struct {
-	value T
+type EventArgs struct {
+	value *interface{}
 	ctx   context.Context
 }
 
-func NewEventX[T any](v T) *EventX[T] {
-	return &EventX[T]{
+func NewEventArgs(v *interface{}) *EventArgs {
+	return &EventArgs{
 		value: v,
 	}
 }
 
-func (e *EventX[T]) Value() T {
-	return e.value
+func EventArgsValueAs[T any](e *EventArgs) *T {
+	if e == nil {
+		return nil
+	}
+	var v *T = (*T)(unsafe.Pointer(e.value))
+	return v
 }
 
 // Context returns the message's context. To change the context, use
@@ -22,7 +29,7 @@ func (e *EventX[T]) Value() T {
 //
 // The returned context is always non-nil; it defaults to the
 // background context.
-func (m *EventX[T]) Context() context.Context {
+func (m *EventArgs) Context() context.Context {
 	if m.ctx != nil {
 		return m.ctx
 	}
@@ -30,11 +37,6 @@ func (m *EventX[T]) Context() context.Context {
 }
 
 // SetContext sets provided context to the message.
-func (m *EventX[T]) SetContext(ctx context.Context) {
+func (m *EventArgs) SetContext(ctx context.Context) {
 	m.ctx = ctx
 }
-
-type AnyEvent = EventX[interface{}]
-
-// Messages is a slice of messages.
-type EventXList = []*AnyEvent

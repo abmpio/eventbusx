@@ -12,6 +12,12 @@ import (
 )
 
 func main() {
+	subscribeEvent()
+	// publishEvent()
+	asyncPublishEvent()
+}
+
+func testMessages() {
 	pubSub := gochannel.NewGoChannel(
 		gochannel.Config{},
 		eventbusx.NewStdLogger(false, false),
@@ -47,4 +53,39 @@ func process(messages <-chan *message.Message) {
 		// otherwise, it will be resent over and over again.
 		msg.Ack()
 	}
+}
+
+type packet struct {
+	M string
+}
+
+func publishEvent() {
+	for {
+		eventbusx.Publish(&packet{
+			M: fmt.Sprintf("this is test event,uuid:%s", eventbusx.NewUUID()),
+		})
+		time.Sleep(time.Second)
+	}
+}
+
+func asyncPublishEvent() {
+	for {
+		eventbusx.PublishAsync(&packet{
+			M: fmt.Sprintf("this is test event,uuid:%s", eventbusx.NewUUID()),
+		})
+		time.Sleep(time.Second)
+	}
+}
+
+func subscribeEvent() {
+	eventbusx.SubscribeWithAction[packet](func(e *eventbusx.EventArgs) {
+		fmt.Println("received events,observer1", eventbusx.EventArgsValueAs[packet](e))
+		time.Sleep(time.Second * 10)
+		panic("error")
+	})
+	eventbusx.SubscribeWithAction[packet](func(e *eventbusx.EventArgs) {
+		fmt.Println("received events,observer2", eventbusx.EventArgsValueAs[packet](e))
+		// time.Sleep(time.Second * 5)
+		// panic("error")
+	})
 }

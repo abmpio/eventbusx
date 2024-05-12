@@ -1,3 +1,0 @@
-validation_cmd: "go run main.go"
-timeout: 30
-expected_output: "payload: Hello, world!"
