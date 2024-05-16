@@ -1,5 +1,3 @@
-github.com/abmpio/x v0.0.0-20240512073201-1a8258e1d48e h1:Gw+h5pKnb4Qls81yQ1mH6xsIEit9SedEjwZtnW3vsCw=
-github.com/abmpio/x v0.0.0-20240512073201-1a8258e1d48e/go.mod h1:JNuVxGPwB77sqjmiwBd9lGZWFmpDV54yzIr9KRFOiK8=
 github.com/abmpio/x v0.0.0-20240512085224-29a79735f5e4 h1:m07gq8kokJpCY6X869bKpgKp08cMr1Jysitb89W6ZjE=
 github.com/abmpio/x v0.0.0-20240512085224-29a79735f5e4/go.mod h1:JNuVxGPwB77sqjmiwBd9lGZWFmpDV54yzIr9KRFOiK8=
 github.com/google/uuid v1.2.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
