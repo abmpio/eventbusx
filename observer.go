@@ -6,23 +6,23 @@ import (
 )
 
 type IEventObserver interface {
-	Notify(e *EventArgs)
+	Notify(e *EventArgs) error
 }
 
 type actionEventObserver struct {
-	action func(e *EventArgs)
+	action func(e *EventArgs) error
 }
 
 var _ IEventObserver = (*actionEventObserver)(nil)
 
-func (a *actionEventObserver) Notify(e *EventArgs) {
+func (a *actionEventObserver) Notify(e *EventArgs) error {
 	if a.action == nil {
-		return
+		return nil
 	}
-	a.action(e)
+	return a.action(e)
 }
 
-func EventObserverFromAction(action func(*EventArgs)) IEventObserver {
+func EventObserverFromAction(action func(*EventArgs) error) IEventObserver {
 	return &actionEventObserver{
 		action: action,
 	}
@@ -38,6 +38,38 @@ func newEventObserverList() *eventObserverList {
 		rwLock: sync.RWMutex{},
 		list:   make([]IEventObserver, 0),
 	}
+}
+
+func (l *eventObserverList) notifyObserverWithResult(e *EventArgs, async bool) error {
+	l.rwLock.RLock()
+	cList := l.list
+	l.rwLock.RUnlock()
+
+	notifyFn := func() error {
+		for _, eachObserver := range cList {
+			currentObserver := eachObserver
+			notifyFn := func() error {
+				defer func() {
+					if p := recover(); p != nil {
+						msg := fmt.Sprint(p)
+						_globalLogger.Info(fmt.Sprintf("panic when actionEventObserver notify, err:%s", msg), nil)
+					}
+				}()
+				return currentObserver.Notify(e)
+			}
+			err := notifyFn()
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	if !async {
+		return notifyFn()
+	}
+	// async, go func
+	go notifyFn()
+	return nil
 }
 
 func (l *eventObserverList) notifyObserver(e *EventArgs, async bool) {
@@ -62,10 +94,10 @@ func (l *eventObserverList) notifyObserver(e *EventArgs, async bool) {
 	}
 	if !async {
 		notifyFn()
-	} else {
-		// async, go func
-		go notifyFn()
+		return
 	}
+	// async, go func
+	go notifyFn()
 }
 
 func (l *eventObserverList) registObserver(observers ...IEventObserver) {

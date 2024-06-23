@@ -49,6 +49,14 @@ func (p *publisher) notifyObserver(topic string, e *EventArgs, async bool) {
 	observerList.notifyObserver(e, async)
 }
 
+func (p *publisher) notifyObserverWithResult(topic string, e *EventArgs, async bool) error {
+	observerList := p.getObserverList(topic)
+	if observerList == nil {
+		return nil
+	}
+	return observerList.notifyObserverWithResult(e, async)
+}
+
 func (p *publisher) getObserverList(topic string) *eventObserverList {
 	p.rwLock.RLock()
 	defer p.rwLock.RUnlock()
